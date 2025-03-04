@@ -1,7 +1,7 @@
 {
     "author": "ErdemOzgen",
     "name": "Blackdagger Penetration Testing Kit",
-    "short_name": "OWASP BPTK",
+    "short_name": "BPTK",
     "description": "Blackdagger Penetration Testing Kit",
     "version": "8.9.2",
     "manifest_version": 2,
