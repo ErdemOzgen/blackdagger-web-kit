@@ -1,0 +1,65 @@
+{
+    "author": "ErdemOzgen",
+    "name": "Blackdagger Penetration Testing Kit",
+    "short_name": "OWASP BPTK",
+    "description": "Blackdagger Penetration Testing Kit",
+    "version": "8.9.2",
+    "manifest_version": 2,
+    "background": {
+        "page": "bptk/background.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "bptk/packages/browser-polyfill/browser-polyfill.min.js"
+            ],
+            "all_frames": true,
+            "run_at": "document_start"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "bptk/content.js"
+            ],
+            "all_frames": false,
+            "run_at": "document_start"
+        }
+    ],
+    "permissions": [
+        "<all_urls>",
+        "activeTab",
+        "cookies",
+        "notifications",
+        "storage",
+        "unlimitedStorage",
+        "tabs",
+        "webRequest",
+        "webRequestBlocking",
+        "scripting"
+    ],
+    "icons": {
+        "128": "bptk/browser/assets/images/icon.png"
+    },
+    "browser_action": {
+        "default_icon": {
+            "128": "bptk/browser/assets/images/icon.png"
+        },
+        "default_title": "Blackdagger Penetration Testing Kit",
+        "default_popup": "bptk/browser/index.html"
+    },
+    "options_ui": {
+        "page": "bptk/browser/settings.html",
+        "open_in_tab": false
+    },
+    "web_accessible_resources": [
+        "bptk/*.js",
+        "bptk/*.map",
+        "bptk/*.png",
+        "bptk/*.json"
+    ]
+}

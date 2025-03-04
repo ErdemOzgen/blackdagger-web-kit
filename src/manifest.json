@@ -1,0 +1,90 @@
+{
+    "author": "ErdemOzgen",
+    "name": "BLACKDAGGER BPTK",
+    "short_name": "BLACKDAGGER BPTK",
+    "description": "Blackdagger Penetration Testing Kit",
+    "version": "3.6.9",
+    "manifest_version": 3,
+    "incognito": "split",
+    "background": {
+        "service_worker": "app.js",
+        "type": "module"
+    },
+    "content_security_policy": {
+        "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals;"
+    },
+    "sandbox": {
+        "pages": [
+            "bptk/browser/showhtml.html"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "bptk/packages/browser-polyfill/browser-polyfill.min.js"
+            ],
+            "all_frames": true,
+            "run_at": "document_start",
+            "match_about_blank": true
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "bptk/content.js"
+            ],
+            "all_frames": true,
+            "run_at": "document_start",
+            "match_about_blank": true
+        }
+    ],
+    "permissions": [
+        "activeTab",
+        "cookies",
+        "notifications",
+        "storage",
+        "unlimitedStorage",
+        "tabs",
+        "webRequest",
+        "background",
+        "debugger",
+        "scripting",
+        "declarativeNetRequest",
+        "declarativeNetRequestWithHostAccess"
+    ],
+    "host_permissions": [
+        "<all_urls>",
+        "*://*/*"
+    ],
+    "icons": {
+        "128": "bptk/browser/assets/images/icon.png"
+    },
+    "action": {
+        "default_icon": {
+            "128": "bptk/browser/assets/images/icon.png"
+        },
+        "default_title": "Blackdagger Penetration Testing Kit",
+        "default_popup": "bptk/browser/index.html"
+    },
+    "options_ui": {
+        "page": "bptk/browser/settings.html",
+        "open_in_tab": false
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "bptk/*.js",
+                "bptk/*.map",
+                "bptk/*.png",
+                "bptk/*.json"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

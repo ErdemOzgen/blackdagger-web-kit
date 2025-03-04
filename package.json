@@ -1,0 +1,49 @@
+{
+    "name": "BPTK",
+    "version": "8.0.0",
+    "type": "module",
+    "description": "",
+    "main": "app.js",
+    "author": "ErdemOzgen",
+    "license": "",
+    "repository": "",
+    "scripts": {
+        "build": "npx npm-check-updates -u && npm install &&  npm run build_src && npm run build_waf",
+        "build_src": "webpack --config misc/webpack.config.js && node ./script/build_src.js",
+        "build_waf": "node ./script/build_waf.js",
+        "build_pkg": "npm run build && node ./script/build_pkg.js"
+    },
+    "resolutions": {},
+    "dependencies": {
+        "@babel/core": "latest",
+        "@babel/preset-env": "latest",
+        "archiver": "latest",
+        "babel-loader": "latest",
+        "clone-git-repo": "latest",
+        "codemirror-minified": "latest",
+        "copy-webpack-plugin": "latest",
+        "crypto-es": "latest",
+        "cypress": "latest",
+        "datatables.net": "^2.2.1",
+        "datatables.net-dt": "^2.2.1",
+        "fomantic-ui": "latest",
+        "fs-extra": "latest",
+        "jose": "latest",
+        "jquery": "latest",
+        "mermaid": "latest",
+        "npm": "^11.1.0",
+        "request": "latest",
+        "retire": "latest",
+        "swagger-editor": "latest",
+        "wappalyzer": "^7.0.3",
+        "webextension-polyfill": "latest",
+        "webpack": "^5.97.1"
+    },
+    "devDependencies": {
+        "@playwright/test": "latest",
+        "@types/node": "latest",
+        "ts-loader": "latest",
+        "typescript": "latest",
+        "webpack-cli": "latest"
+    }
+}
