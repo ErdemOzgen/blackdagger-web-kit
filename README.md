@@ -1,4 +1,4 @@
-# pentestkit
+# Blackdagger Penetration Testing Kit (BPTK)
 
 The Blackdagger Penetration Testing Kit (BPTK) browser extension is your all-in-one solution for streamlining your daily tasks in the realm of application security. Whether you're a penetration tester, a member of a Red Team, or an application security practitioner, this extension is designed to enhance your efficiency and provide valuable insights.
 
