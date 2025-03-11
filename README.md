@@ -1,66 +1,115 @@
 # Blackdagger Penetration Testing Kit (BPTK)
 
-The Blackdagger Penetration Testing Kit (BPTK) browser extension is your all-in-one solution for streamlining your daily tasks in the realm of application security. Whether you're a penetration tester, a member of a Red Team, or an application security practitioner, this extension is designed to enhance your efficiency and provide valuable insights.
+![](./imgs/1.png)
 
-Key Features:
+The Blackdagger Penetration Testing Kit (BPTK) browser extension is a sophisticated, enhanced version of the OWASP Penetration Testing Kit, designed specifically for Red Team operations and advanced penetration testing workflows. Leveraging GitHub Actions runners, BPTK performs dynamic application security testing (DAST) without triggering common web defenses or IP-based blocking mechanisms, significantly improving operational security (OPSEC).
 
-In-Browser Runtime Scanning: BPTK offers Dynamic Application Security Testing (DAST) and Software Composition Analysis (SCA) scanning right within your browser. Detect SQL Injections, Command Line Injections, Stored and Reflected Cross-Site Scripting (XSS) vulnerabilities, and more. It even identifies complex threats like SQL Authentication Bypass, XPath injections, and JWT attacks.
+## Key Features
 
-JWT Inspector: We've added a crucial new feature – JWT Inspector. It empowers you to analyze JSON Web Tokens (JWT), build new tokens, and generate public and private keys for JWT signing.
+### GitHub Runner-Powered DAST Scanning
 
-Insightful Information: Get a one-click access to insightful information about the target application, including its technology stack, Web Application Firewalls (WAFs), security headers, crawled links, and authentication flow.
+BPTK revolutionizes traditional DAST by leveraging GitHub Actions runners, significantly enhancing operational security (OPSEC). This method allows penetration testers and Red Team operators to perform scans and execute simulated attacks from GitHub's trusted infrastructure, thereby reducing the likelihood of detection by web defenses and IP-based blocking mechanisms. By simply forking the provided default GitHub repository and configuring your GitHub token within the BPTK DAST settings, you ensure stealthy, uninterrupted, and effective security testing with minimized risk of alerting defensive measures or leaving traceable digital footprints.
 
-Proxy with Traffic Log: BPTK includes a proxy with a detailed traffic log. This log allows you to repeat any request in the R-Builder or send it to the DAST scanner (former R-Attacker). You can automate the execution of Cross-Site Scripting (XSS), SQL injection, or OS Command injections.
+![](./imgs/2.png)
+![](./imgs/3.png)
 
-R-Builder for Request Tampering and Request Smuggling:
-The extension includes R-Builder, a powerful tool that allows you to craft and manipulate HTTP requests with precision. Use R-Builder to modify and tamper with requests, enabling you to test the robustness of the application's security. R-Builder empowers you to execute complex maneuvers, including HTTP request smuggling attacks, for a comprehensive assessment of application vulnerabilities.
+### Integration with the Blackdagger System
 
-Cookie Management: The extension includes a cookie editor, allowing you to manage cookies efficiently. Add, edit, remove, block, protect, export, and import cookies with ease.
-Decoder/Encoder Utility: The integrated utility helps you manage encoding and decoding from and to various formats, including UTF-8, Base64, MD5, and more.
-Swagger.IO Integration: We've integrated Swagger.IO to enhance your understanding of API documentation. Easily create requests to interact with API endpoints.
+![](./imgs/4.png)
+![](./imgs/5.png)
 
-Selenium Integration: With Selenium integration, BPTK aids in identifying security risks at the early stages of the development cycle, ensuring robust security from the outset.
 
-Enhance your application security practices with BPTK, the browser extension that makes your browser smarter. Whether you need to uncover vulnerabilities, analyze JWT tokens, or optimize your security workflow, BPTK has got you covered. Try it today and take your application security to the next level.
+Seamlessly integrates with the comprehensive Blackdagger continuous red team operations framework. Initiate scans, manage complex multi-step attack scenarios, and leverage external security tools beyond browser-based capabilities, expanding your tactical reach.
 
-## Development
-```
-git clone git@github.com:DenisPodgurskii/pentestkit.git
-cd pentestkit
+Blackdagger represents a significant advancement in automation technology, offering a comprehensive solution for orchestrating complex workflows in DevOps, DevSecOps, MLOps, MLSecOps, and Continuous Automated Red Teaming (CART) environments. At its core, Blackdagger simplifies the management and execution of intricate workflows through its user-friendly approach and powerful functionality. Leveraging a declarative YAML format, Blackdagger enables users to define automation pipelines using a Directed Acyclic Graph (DAG), clearly expressing task dependencies and execution logic without extensive scripting or coding.
+
+With a built-in Web UI, users can easily manage, rerun, and monitor automation pipelines in real-time, significantly streamlining the workflow management process. Additionally, Blackdagger's native Docker support ensures seamless integration with containerized environments, and its versatile toolset allows task execution via HTTP requests and SSH commands. This integration enhances your tactical reach, simplifying complex multi-step attack scenarios, and enables you to leverage external security tools effectively, ensuring comprehensive and robust operations.
+
+
+### JWT Inspector 
+
+Easily analyze JSON Web Tokens (JWT), build and manipulate tokens, and generate cryptographic key pairs directly within your browser.
+
+### Application Insight
+
+![](./imgs/6.png)
+
+One-click comprehensive intelligence, including:
+
+- Technology stack identification
+- Web Application Firewall (WAF) detection
+- Security header analysis
+- Crawled link visualization
+- Authentication flow inspection
+- Software Composition Analysis (SCA) scanning right within your browser 
+
+### Integrated Proxy with Traffic Logging
+
+![](./imgs/7.png)
+
+A robust proxy with detailed logging, allowing you to replay requests or seamlessly forward them to the integrated DAST tool for automated exploitation.
+
+### R-Builder for Advanced Request Manipulation
+
+Craft, modify, and tamper HTTP requests precisely to test application resilience. R-Builder supports complex attacks including HTTP request smuggling for thorough security assessments.
+
+### Cookie Management
+
+![](./imgs/8.png)
+
+Effectively manage cookies with features to add, edit, block, protect, import, and export.
+
+### Encoder/Decoder Utility
+
+Convert and handle data across formats such as UTF-8, Base64, MD5, and more directly in your browser.
+
+### Swagger.IO API Integration
+
+Enhanced API documentation handling through integrated Swagger.IO, allowing seamless interactions with API endpoints.
+
+### Selenium Integration
+
+Identify and remediate security issues early in development by automating browser actions and integrating security checks directly into your development lifecycle.
+
+
+
+## Installation and Development
+
+### Clone and Build
+
+```bash
+git clone https://github.com/ErdemOzgen/blackdagger-web-kit.git
+cd blackdagger-web-kit
 npm install
 npm run build
 ```
-Chrome/Edge/Brave -> Extensions -> Load unpacked -> select pentestkit/src directory
 
-Or run 
-```
+For Chrome/Edge/Brave:
+
+1. Navigate to `Extensions`.
+2. Enable `Developer Mode`.
+3. Click on `Load unpacked` and select `blackdagger-web-kit/src` directory.
+
+Alternatively, create a packaged version:
+
+```bash
 npm run build_pkg
 ```
-This will create zip arhives in pentestkit/dist folder
 
-On Windows build it's a chance you can expect an error during build process. In this case try to execute the following command first.
-```
+This generates a ZIP archive in the `pentestkit/dist` folder.
+
+**Note for Windows Users:**
+If encountering build errors, run:
+
+```bash
 npm install --ignore-scripts fomantic-ui
 ```
 
-## Installation
+## Installation Links
 
-[Firefox](https://addons.mozilla.org/en-US/firefox/addon/penetration-testing-kit/) 
+Official web extension links will be updated upon release. Meanwhile, download and build from the repository:
 
-[Chrome](https://chrome.google.com/webstore/detail/penetration-testing-kit/ojkchikaholjmcnefhjlbohackpeeknd) 
+- [Firefox](https://github.com/ErdemOzgen/blackdagger-web-kit)
+- [Chrome](https://github.com/ErdemOzgen/blackdagger-web-kit)
 
-[MS Edge](https://microsoftedge.microsoft.com/addons/detail/penetration-testing-kit/knjnghhnhcpcglfdjppffbpfndeebkdm) 
-
-
-## Documentation / How To
-
-
-
-
-## Youtube channel
-
-[Youtube channel](https://www.youtube.com/channel/UCbEcTounPkV1aitE1egXfqw) 
-
-
-
-
+Take your penetration testing and Red Team operations to the next level with the enhanced security capabilities of the Blackdagger Penetration Testing Kit (BPTK).
