@@ -124,8 +124,8 @@ fs.copySync('./node_modules/crypto-es/lib', 'src/bptk/packages/crypto-es', { rec
 if (!fs.existsSync('src/bptk/packages/jose')) {
     fs.mkdirSync('src/bptk/packages/jose', { recursive: true });
 }
-fs.copySync('./node_modules/jose/dist/browser', 'src/bptk/packages/jose/browser', { recursive: true })
-
+fs.copySync('./node_modules/jose/dist/types', 'src/bptk/packages/jose/types', { recursive: true })
+fs.copySync('./node_modules/jose/dist/webapi', 'src/bptk/packages/jose/webapi', { recursive: true })
 
 //retire
 if (!fs.existsSync('src/bptk/packages/retire')) {
