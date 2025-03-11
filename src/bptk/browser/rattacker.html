@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
     <meta content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no" name="viewport" />
-    <meta content="Blackdagger Penetration Testing Kit - cross-browser extension for penetration testing" name="description" />
-    <meta content="Blackdagger Penetration Testing Kit, request builder, traffic recording, macro recording" name="keywords" />
-    <meta content="PPType" name="author" />
+    <meta content="GitHub Workflow Runner - browser extension for triggering GitHub Actions" name="description" />
+    <meta content="GitHub Action, Workflow Runner, CI/CD" name="keywords" />
     <meta content="#ffffff" name="theme-color" />
-    <title>Blackdagger Penetration Testing Kit - DAST (R-Attacker)</title>
+    <title>GitHub Workflow Runner</title>
 
     <script src="../packages/browser-polyfill/browser-polyfill.min.js"></script>
     <script src="../packages/jquery/jquery.min.js"></script>
     <script src="../packages/jquery/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
 
     <link rel="stylesheet" href="../packages/semantic-ui/semantic.min.css" type="text/css" />
     <script src="../packages/semantic-ui/semantic.min.js"></script>
@@ -22,6 +21,7 @@
     <link rel="stylesheet" href="../packages/codemirror/addon/fold/foldgutter.css" type="text/css" />
     <script src="../packages/codemirror/codemirror.js"></script>
     <script src="../packages/codemirror/mode/http/http.js"></script>
+    <script src="../packages/codemirror/mode/yaml/yaml.js"></script>
     <script src="../packages/codemirror/addon/fold/foldcode.js"></script>
     <script src="../packages/codemirror/addon/fold/foldgutter.js"></script>
     <script src="../packages/codemirror/addon/fold/brace-fold.js"></script>
@@ -33,211 +33,170 @@
     <link rel="stylesheet" href="assets/css/default.css" type="text/css" />
     <script src="assets/js/menu.js"></script>
 
-    <script type="module" src="assets/js/rattacker.js"></script>
-
     <style>
         .CodeMirror-code {
             padding-top: 35px;
         }
+        .input-row {
+            margin-bottom: 10px;
+        }
+        .input-row label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .input-row input {
+            width: 100%;
+            padding: 5px;
+        }
+        .action-card {
+            margin-bottom: 1em;
+            cursor: pointer;
+        }
+        .action-card:hover {
+            box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+        }
+        .run-history-item {
+            margin-bottom: 0.5em;
+            padding: 0.5em;
+            border-radius: 4px;
+        }
+        .run-history-item:hover {
+            background-color: #f9f9f9;
+        }
+        .run-success {
+            border-left: 4px solid #21ba45;
+        }
+        .run-failure {
+            border-left: 4px solid #db2828;
+        }
+        .run-pending {
+            border-left: 4px solid #f2711c;
+        }
     </style>
-
 </head>
 
 <body>
     <div id="mainMenuWrapper">
         <div class="ui segment clearing info_tab">
             <div style="padding-top: 5px; padding-right: 4px;">
-                <div class="ui small button generate_report" style="display: none;margin-left: -11px;">Generate
-                    report</div>
-                <!-- <div class="ui small secondary button save_report" style="display: none; position: relative">Save
-                    report<i class="right floated cloud upload icon" style="padding-left: 8px;"></i>
-                    <div style="position:absolute; top:0px;right: 0px">
-                        <div class="ui  centered inline inverted loader"></div>
-                    </div>
-                </div> -->
-
-                <!-- <div class="ui small secondary button exchange" style="display: none; position: relative">
-                    Import/Export<i class="right floated exchange icon" style="padding-left: 8px;"></i>
-                    <div style="position:absolute; top:0px;right: 0px">
-                        <div class="ui  centered inline inverted loader"></div>
-                    </div>
-                </div> -->
-
-                <div class="ui mini message scan_info" style="display: none">
-                    <div class="ui header">Scanning <span id="scanning_url"></span></div>
+                <div class="ui small button generate_report" id="saveFavorites" style="margin-left: -11px;">Save Favorites</div>
+                <div class="ui mini message scan_info" id="actionRunning" style="display: none">
+                    <div class="ui header">Running workflow <span id="running_workflow"></span></div>
                 </div>
-                <!-- <div class="ui mini right floated icon button " ><i class="settings rattacker large icon"
-                    title="Settings"></i></div> -->
-                <div class="ui mini right floated icon button"><i class="trash all alternate large icon reset"
-                        title="Reset"></i>
+                <div class="ui mini right floated icon button" id="resetButton">
+                    <i class="trash all alternate large icon" title="Reset"></i>
                 </div>
-                <!-- <div class="ui mini right floated icon button cloud_download_scans"><i
-                        class="cloud download alternate large icon" title="Download from cloud"></i>
-                </div> -->
-                <div class="ui mini right floated icon button import_export"><i
-                        class="exchange alternate large icon" title="Import/Export"></i>
+                <div class="ui mini right floated icon button" id="importExportButton">
+                    <i class="exchange alternate large icon" title="Import/Export"></i>
                 </div>
-
-                <div class="ui secondary small right floated button run_scan_runtime" id="run_scan_bg_control">Scan in
-                    runtime</div>
-                <div class="ui secondary small right floated button stop_scan_runtime" id="stop_scan_bg_control"
-                    style="display:none">Stop runtime scan</div>
+                <div class="ui small right floated button" id="refreshWorkflowsButton">Refresh Workflows</div>
             </div>
         </div>
-
     </div>
+    
     <div id="pagecontent" style="padding-top:80px;">
         <div id="main">
             <table class="ui tiny table" style="padding: 0px;margin: 0px;border: none;">
                 <tbody>
                     <tr>
-                        <td style="min-width:50px; vertical-align: text-top; padding: 0px;">
+                        <td style="min-width:50px; vertical-align: text-top; padding: 0px; width: 40%;">
                             <div class="eight wide field" style="padding-right: 1px;">
-                                <div class="field rattacker"
+                                <div class="field github-workflow"
                                     style="scrollbar-width: none;height: 100% !important;min-height: 85vh; position: relative;">
                                     <div class="field"
                                         style="border:none;scrollbar-width: none;position: absolute;height: 100%;width: 100%;">
-                                        <div class="ui items styled accordion" id="request_info"
-                                            style="width: 100%; overflow: scroll;position:absolute; margin: 0px;scrollbar-width: none;">
+                                        <div class="ui segment">
+                                            <h3 class="ui header">GitHub Credentials</h3>
+                                            <form id="credentialsForm" class="ui form">
+                                                <div class="field">
+                                                    <label for="username">GitHub Username:</label>
+                                                    <input type="text" id="username" placeholder="GitHub Username" value="ErdemOzgen">
+                                                </div>
+                                                <div class="field">
+                                                    <label for="token">GitHub Token:</label>
+                                                    <input type="password" id="token" placeholder="GitHub Personal Access Token">
+                                                </div>
+                                                <div class="field">
+                                                    <label for="repo">Repository Name:</label>
+                                                    <input type="text" id="repo" placeholder="Repository Name" value="github-actions-testbench">
+                                                </div>
+                                                <div class="field">
+                                                    <label for="branch">Branch:</label>
+                                                    <input type="text" id="branch" placeholder="main" value="main">
+                                                </div>
+                                                <div class="ui primary button" id="saveCredentials">Save Credentials</div>
+                                                <div class="ui button" id="loadWorkflows">Load Workflows</div>
+                                            </form>
                                         </div>
+                                        
+                                        <div class="ui segment" style="margin-top: 1em;">
+                                            <h3 class="ui header">Favorite Workflows</h3>
+                                            <div id="favoriteWorkflows" class="ui cards">
+                                                <!-- Favorite workflows will be loaded here -->
+                                                <div class="ui message" id="noFavoritesMessage">
+                                                    No favorite workflows saved yet. Save a workflow by clicking the star icon.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <div style="position:absolute; top:0px;right: 0px">
-                                            <div class="ui centered inline active inverted loader" id="init_loader">
-                                            </div>
+                                            <div class="ui centered inline active inverted loader" id="init_loader" style="display: none;"></div>
                                         </div>
-                                        <div style="height: 100%;display:none" id="welcome_message">
-                                            <div class="ui large message" style="height:100%">
-                                                <!-- <div class="ui blue  message"
-                                                    style="margin-top: -13px;margin-left: -20px;margin-right: -20px;height: 63px;">
-                                                    <div class="header">Try BPTK+ to get Pro attacks</div>
-                                                    <div class="content">
-                                                        More attacks and cloud storage -
-                                                        <a href="https://app.bptk-plus.io/"
-                                                            target="_blank">https://app.bptk-plus.io/</a>
-                                                    </div>
-                                                </div> -->
-                                                <div class="header">How to scan an application:</div>
-                                                <div class="content">
-                                                    <ul>
-                                                        <li>Click the "Scan in runtime" button and confirm it's starting
-                                                        </li>
-                                                        <li>Start browsing the application you are scanning, eg click on
-                                                            different
-                                                            links, submit forms, etc</li>
-                                                        <li>Once completed open DAST scanner (R-Attacker) and stop the scan</li>
-                                                        <li>Check the result</li>
-                                                    </ul>
-                                                </div>
-
-                                                <div class="header">Default attacks </div>
-                                                <div class="content" style="margin-top: 8px;">
-                                                    <table id="tbl_modules"
-                                                        class="ui celled table small responsive nowrap unstackable"
-                                                        width="100%">
-                                                        <thead>
-                                                            <tr style="display: none;">
-                                                                <th></th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                    </table>
-                                                </div>
-
-                                            </div>
-
-
-                                        </div>
-
-                                        <div style="height: 60px; width: 100%; position: absolute; bottom:0px; overflow: scroll;display:none;scrollbar-width: none;"
-                                            id="progress_message">
-                                            <div class="ui small message" style="height:100%">
-                                                <div class="header">
-                                                    Scan progress
-                                                </div>
-                                                <p>Attack running: <span id="progress_attack_name"> </span></p>
-                                            </div>
-
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td style="width:50%;margin: 0px; padding: 0px 0px 0px 2px;border: none;vertical-align: top;">
+                        <td style="width:60%;margin: 0px; padding: 0px 0px 0px 2px;border: none;vertical-align: top;">
                             <div class="eight wide field" style="padding-left: 1px;">
-                                <div class="field rattacker"
+                                <div class="field github-workflow"
                                     style="scrollbar-width: none;height: 100% !important;min-height: 85vh;">
-                                    <div class="ui tiny message"
-                                        style="position: sticky;top: 0px;z-index: 1; min-height: 80px;padding-top:15px">
-                                        <div class="ui small icon buttons"
-                                            style="position: absolute;top: 0px;left: 0px;">
-                                            <div class="ui active button" id="filter_all"><i class="icon"
-                                                    title="All attacks" style="min-width: 70px;">All attacks</i></div>
-                                            <div class="ui button" id="filter_vuln"><i class="icon"
-                                                    title="Vulnerabilities only"
-                                                    style="min-width: 70px;">Vulnerabilities</i>
+                                    
+                                    <div class="ui segment">
+                                        <h3 class="ui header">Available Workflows</h3>
+                                        <div class="ui search">
+                                            <div class="ui icon input" style="width: 100%;">
+                                                <input class="prompt" type="text" placeholder="Search workflows..." id="workflowSearch">
+                                                <i class="search icon"></i>
                                             </div>
                                         </div>
-                                        <br />
-                                        <div class="ui mini statistic left floated" style="margin-top: 5px;">
-                                            <div class="value" id="attacks_count">
-                                                0
-                                            </div>
-                                            <div class="label">
-                                                Attacks
-                                            </div>
-                                        </div>
-                                        <div class="ui mini statistic left floated" style="margin-top: 5px;">
-                                            <div class="value" id="vulns_count">
-                                                0
-                                            </div>
-                                            <div class="label">
-                                                Findings
-                                            </div>
-                                        </div>
-                                        <div class="ui mini statistic right floated" style="margin-top: 5px;">
-                                            <div class="value" id="low_count">
-                                                0
-                                            </div>
-                                            <div class="label"><i class="exclamation triangle yellow icon"></i>
-                                                Low
-                                            </div>
-                                        </div>
-                                        <div class="ui mini statistic right floated" style="margin-top: 5px;">
-                                            <div class="value" id="medium_count">
-                                                0
-                                            </div>
-                                            <div class="label"><i class="exclamation triangle orange icon"></i>
-                                                Medium
-                                            </div>
-                                        </div>
-                                        <div class="ui mini statistic right floated" style="margin-top: 5px;">
-                                            <div class="value" id="high_count">
-                                                0
-                                            </div>
-                                            <div class="label"><i class="exclamation triangle red icon"></i>
-                                                High
+                                        <div id="workflowList" class="ui divided items" style="margin-top: 1em; max-height: 300px; overflow-y: auto;">
+                                            <!-- Workflows will be loaded here -->
+                                            <div class="ui message" id="noWorkflowsMessage">
+                                                No workflows loaded. Please enter your GitHub credentials and click "Load Workflows".
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="ui items" id="attacks_info"
-                                        style="width: 100%; overflow: scroll;position:absolute; margin: 0px;scrollbar-width: none;">
+                                    
+                                    <div class="ui segment" style="margin-top: 1em;">
+                                        <h3 class="ui header">Selected Workflow</h3>
+                                        <div id="selectedWorkflow" class="ui form">
+                                            <div class="ui message" id="noSelectionMessage">
+                                                No workflow selected. Click on a workflow from the list above.
+                                            </div>
+                                        </div>
                                     </div>
-
+                                    
+                                    <div class="ui segment" style="margin-top: 1em;">
+                                        <h3 class="ui header">Recent Runs</h3>
+                                        <div id="runHistory" style="max-height: 200px; overflow-y: auto;">
+                                            <!-- Run history will be displayed here -->
+                                            <div class="ui message" id="noRunsMessage">
+                                                No recent workflow runs.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
-
-
         </div>
     </div>
-
-    <!-- Attack details and showHtml support -->
-    <div id="attack_details_dialog_wrapper"></div>
-
-    <div class="ui mini modal error" id="result_dialog">
+    
+    <!-- Modal Dialogs -->
+    <div class="ui mini modal" id="result_dialog">
         <div class="header" id="result_header"></div>
         <div class="content">
             <span id="result_message"></span>
@@ -246,98 +205,584 @@
             <div class="ui approve button">Close</div>
         </div>
     </div>
-
-    <div id="download_scans" class="ui fullscreen modal coupled first" style="display: none; height: 83%">
+    
+    <div id="import_export_dlg" class="ui modal">
         <i class="close icon"></i>
-        <div class="ui small header">Scans:</div>
-        <div class="content" style="min-height: 400px; overflow: scroll;height: 90%;scrollbar-width: none;">
-            <div class="ui negative message" id="download_scans_error"
-                style="height: 100px;overflow: scroll;display: none;scrollbar-width: none;">
-                <div class="header">
-                    Error
+        <div class="ui header">Import/Export Settings</div>
+        <div class="content">
+            <div class="ui button secondary" id="exportSettingsBtn">Export Settings</div>
+            <div class="ui horizontal divider">Or</div>
+            <div class="ui form">
+                <div class="field">
+                    <label>Import Settings (JSON)</label>
+                    <textarea id="importSettingsJson" rows="10"></textarea>
                 </div>
-                <p id="download_error"></p>
-                <p>Check you API key. Open <i class="question circle outline large icon"></i>Settings -> <i
-                        class="cloud large icon"></i>BPTK+ and make sure you have provided a valid key</p>
             </div>
-            <form class="ui tiny form controls" id="scan_list">
-
-                <table id="tbl_scans" class="ui celled table small responsive nowrap unstackable" width="100%"
-                    style="margin-bottom: 104px;">
-                    <thead>
-                        <tr>
-                            <th>Domain</th>
-                            <th>Scan ID</th>
-                            <th>Scan date</th>
-                            <th>Download</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                </table>
-            </form>
+            <div class="ui button secondary" id="importSettingsBtn">Import from Text</div>
+            <div class="ui right floated button secondary" id="importSettingsFileBtn">Import from File</div>
+            <input id="importSettingsFileInput" type="file" hidden />
         </div>
     </div>
-
-    <div id="delete_scan_dlg" class="ui mini modal coupled second" style="display: none;">
+    
+    <div id="workflow_run_dlg" class="ui modal">
         <i class="close icon"></i>
-        <div class="ui header">Confirm delete</div>
+        <div class="header">Run Workflow</div>
         <div class="content">
-            <span id="scan_delete_message"></span>
-            <form class="ui tiny form controls" id="scan_delete_form">
-                <input type="text" id="scan_hostname" placeholder="Type scan hostname">
-            </form>
-        </div>
-
-        <div class="actions">
-            <div class="ui approve button secondary confirm_scan_delete">Delete scan</div>
-        </div>
-    </div>
-
-    <div id="run_scan_dlg" class="ui tiny modal coupled second" style="display: none;">
-        <i class="close icon"></i>
-        <div class="header">Confirm scan run</div>
-
-        <div class="content">
-            <div class="ui message" style="margin: -20px -20px 0px -20px;">
-                <p>You are about running attacks on <span id="scan_host" style="font-weight: 600;"></span></p>
+            <div class="ui message">
+                <p>You are about to run the workflow <span id="workflow_name" style="font-weight: 600;"></span></p>
             </div>
-            <p>Domains to scan (comma separated): <br />
-                <i>Example: <br /> domain.com, api.domain.com, subdomain.domain.com, www.domain.com</i>
-                <br />
-                <b>OR</b>
-                <br />
-                <i>*.domain.com - to scan all subdomains</i>
-            </p>
-            <textarea id="scan_domains" style="width: 100%; min-height: 100px;"></textarea>
+            <div id="workflowInputsContainer" class="ui form">
+                <!-- Workflow inputs will be displayed here -->
+            </div>
         </div>
         <div class="actions">
             <div class="ui cancel button">Cancel</div>
-            <div class="ui approve button secondary confirm_scan_run">Run scan</div>
+            <div class="ui approve primary button" id="runWorkflowBtn">Run Workflow</div>
         </div>
     </div>
+    
+    <script>
+        $(document).ready(function() {
+            // Store for favorites and run history
+            let favorites = [];
+            let runHistory = [];
+            let availableWorkflows = [];
+            let selectedWorkflow = null;
+            
+            // Load saved data from storage
+            function loadSavedData() {
+                const savedCredentials = localStorage.getItem('github_credentials');
+                if (savedCredentials) {
+                    const credentials = JSON.parse(savedCredentials);
+                    $('#username').val(credentials.username || '');
+                    $('#repo').val(credentials.repo || '');
+                    $('#branch').val(credentials.branch || 'main');
+                    // Don't load the token for security reasons
+                }
+                
+                const savedFavorites = localStorage.getItem('favorite_workflows');
+                if (savedFavorites) {
+                    favorites = JSON.parse(savedFavorites);
+                    renderFavorites();
+                }
+                
+                const savedHistory = localStorage.getItem('run_history');
+                if (savedHistory) {
+                    runHistory = JSON.parse(savedHistory);
+                    renderRunHistory();
+                }
+            }
+            
+            // Call loadSavedData on startup
+            loadSavedData();
+            
+            // Show result modal
+            function showResult(header, message) {
+                $('#result_header').text(header);
+                $('#result_message').text(message);
+                $('#result_dialog').modal('show');
+            }
+            
+            // Render run history
+            function renderRunHistory() {
+                const runHistoryContainer = $('#runHistory');
+                runHistoryContainer.empty();
+                if (runHistory.length === 0) {
+                    runHistoryContainer.html('<div class="ui message" id="noRunsMessage">No recent workflow runs.</div>');
+                    return;
+                }
+                runHistory.forEach(run => {
+                    const runItem = $(`
+                        <div class="ui message run-history-item ${run.status === 'success' ? 'run-success' : (run.status === 'failure' ? 'run-failure' : 'run-pending')}">
+                            <div class="header">${run.name}</div>
+                            <p>${run.timestamp} - ${run.status}</p>
+                        </div>
+                    `);
+                    runHistoryContainer.append(runItem);
+                });
+            }
+            
+            // Save credentials to local storage
+            $('#saveCredentials').on('click', function() {
+                const username = $('#username').val().trim();
+                const token = $('#token').val().trim();
+                const repo = $('#repo').val().trim();
+                const branch = $('#branch').val().trim();
+                
+                if (!username || !repo) {
+                    showResult('Error', 'Username and repository name are required.');
+                    return;
+                }
+                
+                // Save to local storage (excluding token for security)
+                localStorage.setItem('github_credentials', JSON.stringify({
+                    username,
+                    repo,
+                    branch
+                }));
+                
+                showResult('Success', 'Credentials saved successfully!');
+            });
+            
+            // Load workflows from GitHub
+            $('#loadWorkflows').on('click', loadWorkflows);
+            $('#refreshWorkflowsButton').on('click', loadWorkflows);
+            
+            function loadWorkflows() {
+                const username = $('#username').val().trim();
+                const token = $('#token').val().trim();
+                const repo = $('#repo').val().trim();
+                
+                if (!username || !token || !repo) {
+                    showResult('Error', 'Username, token, and repository name are required to load workflows.');
+                    return;
+                }
+                
+                $('#init_loader').show();
+                $('#noWorkflowsMessage').show();
+                $('#workflowList').html('');
+                
+                const url = `https://api.github.com/repos/${username}/${repo}/actions/workflows`;
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    availableWorkflows = data.workflows || [];
+                    
+                    if (availableWorkflows.length === 0) {
+                        $('#noWorkflowsMessage').text('No workflows found in this repository.');
+                    } else {
+                        $('#noWorkflowsMessage').hide();
+                        renderWorkflows(availableWorkflows);
+                    }
+                })
+                .catch(error => {
+                    showResult('Error', 'Failed to load workflows: ' + error.message);
+                })
+                .finally(() => {
+                    $('#init_loader').hide();
+                });
+            }
+            
+            // Render workflows in the list
+            function renderWorkflows(workflows) {
+                const workflowList = $('#workflowList');
+                workflowList.empty();
+                
+                workflows.forEach(workflow => {
+                    const fileName = workflow.path.split('/').pop();
+                    const isFavorite = favorites.some(fav => fav.id === workflow.id);
+                    
+                    const workflowItem = $(`
+                        <div class="item workflow-item" data-id="${workflow.id}" data-name="${workflow.name}" data-path="${workflow.path}" data-filename="${fileName}">
+                            <div class="right floated content">
+                                <div class="ui tiny icon button favorite-button ${isFavorite ? 'yellow' : ''}" data-id="${workflow.id}">
+                                    <i class="star icon"></i>
+                                </div>
+                                <div class="ui tiny primary icon button run-button">
+                                    <i class="play icon"></i>
+                                </div>
+                            </div>
+                            <i class="large github middle aligned icon"></i>
+                            <div class="content">
+                                <div class="header">${workflow.name}</div>
+                                <div class="description">${fileName}</div>
+                                <div class="meta">
+                                    <span class="state ${workflow.state}">${workflow.state}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    
+                    workflowList.append(workflowItem);
+                });
+                
+                // Attach event handlers
+                $('.workflow-item').on('click', function(e) {
+                    if (!$(e.target).closest('.favorite-button, .run-button').length) {
+                        const id = $(this).data('id');
+                        const workflow = availableWorkflows.find(w => w.id === id);
+                        if (workflow) {
+                            selectWorkflow(workflow);
+                        }
+                    }
+                });
+                
+                $('.favorite-button').on('click', function() {
+                    const id = $(this).data('id');
+                    toggleFavorite(id);
+                });
+                
+                $('.run-button').on('click', function() {
+                    const item = $(this).closest('.workflow-item');
+                    const id = item.data('id');
+                    const workflow = availableWorkflows.find(w => w.id === id);
+                    if (workflow) {
+                        openRunDialog(workflow);
+                    }
+                });
+            }
+            
+            // Filter workflows based on search
+            $('#workflowSearch').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                
+                if (!availableWorkflows.length) return;
+                
+                const filteredWorkflows = searchTerm ? 
+                    availableWorkflows.filter(w => 
+                        w.name.toLowerCase().includes(searchTerm) || 
+                        w.path.toLowerCase().includes(searchTerm)
+                    ) : 
+                    availableWorkflows;
+                
+                renderWorkflows(filteredWorkflows);
+            });
+            
+            // Select a workflow and show its details
+            function selectWorkflow(workflow) {
+                selectedWorkflow = workflow;
+                
+                const fileName = workflow.path.split('/').pop();
+                $('#noSelectionMessage').hide();
+                
+                const selectedWorkflowDiv = $('#selectedWorkflow');
+                selectedWorkflowDiv.html(`
+                    <h4 class="ui header">${workflow.name}</h4>
+                    <p><strong>File:</strong> ${fileName}</p>
+                    <p><strong>State:</strong> <span class="ui ${workflow.state === 'active' ? 'green' : 'grey'} label">${workflow.state}</span></p>
+                    <div id="workflowYamlContent" style="margin-top: 1em;">
+                        <div class="ui active loader"></div>
+                    </div>
+                    <div class="ui buttons" style="margin-top: 1em;">
+                        <button class="ui primary button" id="runSelectedWorkflow">Run Workflow</button>
+                        <button class="ui button" id="toggleFavoriteSelected">
+                            ${favorites.some(f => f.id === workflow.id) ? 'Remove from Favorites' : 'Add to Favorites'}
+                        </button>
+                    </div>
+                `);
+                
+                // Fetch the workflow YAML content
+                fetchWorkflowContent(workflow);
+                
+                // Attach event handlers
+                $('#runSelectedWorkflow').on('click', function() {
+                    openRunDialog(workflow);
+                });
+                
+                $('#toggleFavoriteSelected').on('click', function() {
+                    toggleFavorite(workflow.id);
+                    $(this).text(favorites.some(f => f.id === workflow.id) ? 'Remove from Favorites' : 'Add to Favorites');
+                });
+            }
+            
+            // Fetch the workflow YAML content
+            function fetchWorkflowContent(workflow) {
+                const username = $('#username').val().trim();
+                const token = $('#token').val().trim();
+                const repo = $('#repo').val().trim();
+                
+                const workflowPath = workflow.path;
+                const url = `https://api.github.com/repos/${username}/${repo}/contents/${workflowPath}`;
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Decode the Base64 content
+                    const decodedContent = atob(data.content);
+                    
+                    // Create a CodeMirror instance for the YAML
+                    $('#workflowYamlContent').html('<textarea id="yamlEditor"></textarea>');
+                    const editor = CodeMirror.fromTextArea(document.getElementById('yamlEditor'), {
+                        mode: 'yaml',
+                        lineNumbers: true,
+                        readOnly: true,
+                        foldGutter: true,
+                        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+                    });
+                    
+                    editor.setValue(decodedContent);
+                })
+                .catch(error => {
+                    $('#workflowYamlContent').html(`<div class="ui negative message">Error loading workflow content: ${error.message}</div>`);
+                });
+            }
+            
+            // Toggle a workflow as favorite
+            function toggleFavorite(workflowId) {
+                const workflowIndex = favorites.findIndex(f => f.id === workflowId);
+                const workflow = availableWorkflows.find(w => w.id === workflowId);
+                
+                if (workflowIndex === -1 && workflow) {
+                    // Add to favorites
+                    const fileName = workflow.path.split('/').pop();
+                    favorites.push({
+                        id: workflow.id,
+                        name: workflow.name,
+                        path: workflow.path,
+                        fileName: fileName
+                    });
+                    $(`.favorite-button[data-id="${workflowId}"]`).addClass('yellow');
+                } else {
+                    // Remove from favorites
+                    favorites.splice(workflowIndex, 1);
+                    $(`.favorite-button[data-id="${workflowId}"]`).removeClass('yellow');
+                }
+                
+                // Save to local storage
+                localStorage.setItem('favorite_workflows', JSON.stringify(favorites));
+                
+                // Render favorites
+                renderFavorites();
+            }
+            
+            // Render favorite workflows
+            function renderFavorites() {
+                const favoritesContainer = $('#favoriteWorkflows');
+                favoritesContainer.empty();
+                
+                if (favorites.length === 0) {
+                    favoritesContainer.html(`
+                        <div class="ui message" id="noFavoritesMessage">
+                            No favorite workflows saved yet. Save a workflow by clicking the star icon.
+                        </div>
+                    `);
+                    return;
+                }
+                
+                favorites.forEach(favorite => {
+                    const card = $(`
+                        <div class="ui card action-card" data-id="${favorite.id}">
+                            <div class="content">
+                                <div class="right floated">
+                                    <i class="close icon remove-favorite" data-id="${favorite.id}"></i>
+                                </div>
+                                <div class="header">${favorite.name}</div>
+                                <div class="meta">${favorite.fileName}</div>
+                            </div>
+                            <div class="ui bottom attached button" data-id="${favorite.id}">
+                                <i class="play icon"></i>
+                                Run Workflow
+                            </div>
+                        </div>
+                    `);
+                    
+                    favoritesContainer.append(card);
+                });
+                
+                // Attach event handlers
+                $('.action-card .button').on('click', function() {
+                    const id = $(this).data('id');
+                    const favorite = favorites.find(f => f.id === id);
+                    const workflow = availableWorkflows.find(w => w.id === id) || {
+                        id: favorite.id,
+                        name: favorite.name,
+                        path: favorite.path
+                    };
+                    
+                    openRunDialog(workflow);
+                });
+                
+                $('.action-card .content').on('click', function(e) {
+                    if (!$(e.target).hasClass('remove-favorite')) {
+                        const id = $(this).closest('.action-card').data('id');
+                        const workflow = availableWorkflows.find(w => w.id === id);
+                        if (workflow) {
+                            selectWorkflow(workflow);
+                        } else {
+                            // If workflow isn't loaded yet, prompt to load workflows
+                            showResult('Info', 'Please load workflows first to view details.');
+                        }
+                    }
+                });
+                
+                $('.remove-favorite').on('click', function(e) {
+                    e.stopPropagation();
+                    const id = $(this).data('id');
+                    toggleFavorite(id);
+                });
+            }
+            
+            // Open the run dialog for a workflow
+            function openRunDialog(workflow) {
+                const fileName = workflow.path.split('/').pop();
+                $('#workflow_name').text(workflow.name + ' (' + fileName + ')');
+                
+                // Load workflow inputs
+                fetchWorkflowInputs(workflow, fileName);
+                
+                // Show the dialog
+                $('#workflow_run_dlg').modal('show');
+            }
+            
+            // Fetch workflow input parameters
+            function fetchWorkflowInputs(workflow, fileName) {
+                const username = $('#username').val().trim();
+                const token = $('#token').val().trim();
+                const repo = $('#repo').val().trim();
+                
+                const workflowPath = workflow.path;
+                const url = `https://api.github.com/repos/${username}/${repo}/contents/${workflowPath}`;
+                
+                $('#workflowInputsContainer').html('<div class="ui active loader"></div>');
+                
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Decode the Base64 content
+                    const decodedContent = atob(data.content);
+                    // Parse the YAML content
+                    const workflowYaml = jsyaml.load(decodedContent);
+                    let inputs = {};
+                    
+                    if (workflowYaml && workflowYaml.on && workflowYaml.on.workflow_dispatch && 
+                        workflowYaml.on.workflow_dispatch.inputs) {
+                        inputs = workflowYaml.on.workflow_dispatch.inputs;
+                    }
+                    
+                    const inputsContainer = $('#workflowInputsContainer');
+                    inputsContainer.empty();
+                    
+                    if (Object.keys(inputs).length === 0) {
+                        inputsContainer.html('<div class="ui message">This workflow does not have any input parameters.</div>');
+                    } else {
+                        // Create input fields for each parameter
+                        for (const inputName in inputs) {
+                            const inputDef = inputs[inputName];
+                            const inputField = $(`
+                                <div class="field">
+                                    <label for="input-${inputName}">${inputName}${inputDef.description ? ` (${inputDef.description})` : ""}</label>
+                                    <input type="text" id="input-${inputName}" placeholder="${inputName}" value="${inputDef.default || ""}">
+                                </div>
+                            `);
+                            
+                            inputsContainer.append(inputField);
+                        }
+                    }
+                    
+                    // Store the workflow data in the run button
+                    $('#runWorkflowBtn').data('workflow', {
+                        ...workflow,
+                        fileName: fileName
+                    });
+                })
+                .catch(error => {
+                    $('#workflowInputsContainer').html(`
+                        <div class="ui negative message">
+                            Error loading workflow inputs: ${error.message}
+                        </div>
+                    `);
+                });
+            }
+            
+            // Run the workflow
+            $('#runWorkflowBtn').on('click', function() {
+                const workflow = $(this).data('workflow');
+                if (!workflow) return;
+                
+                const username = $('#username').val().trim();
+                const token = $('#token').val().trim();
+                const repo = $('#repo').val().trim();
+                const branch = $('#branch').val().trim();
+                
+                if (!username || !token || !repo || !branch) {
+                    showResult('Error', 'Missing required fields. Please check your credentials.');
+                    return;
+                }
+                
+                // Gather the workflow inputs values
+                const inputsContainer = $('#workflowInputsContainer');
+                const inputElements = inputsContainer.find('input');
+                const inputs = {};
+                
+                inputElements.each(function() {
+                    const name = $(this).attr('id').replace('input-', '');
+                    inputs[name] = $(this).val().trim();
+                });
+                
+                // Build the GitHub API URL for workflow dispatch
+                const url = `https://api.github.com/repos/${username}/${repo}/actions/workflows/${workflow.fileName}/dispatches`;
+                
+                // Create the payload with ref and inputs
+                const payload = { ref: branch };
+                if (Object.keys(inputs).length > 0) {
+                    payload.inputs = inputs;
+                }
+                
+                $('#workflow_run_dlg').modal('hide');
+                $('#actionRunning').show();
+                $('#running_workflow').text(workflow.name);
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Unknown error');
+                        });
+                    }
+                })
+                .then(() => {
+                    // Add a run history entry
+                    const runEntry = {
+                        id: Date.now(),
+                        name: workflow.name,
+                        status: 'pending',
+                        timestamp: new Date().toLocaleString()
+                    };
+                    runHistory.push(runEntry);
+                    localStorage.setItem('run_history', JSON.stringify(runHistory));
+                    renderRunHistory();
 
-
-
-    <div id="import_export_dlg" class="ui fullscreen modal coupled second" style="display: none;">
-        <i class="close icon"></i>
-        <div class="ui header">Import/Export</div>
-        <div class="content">
-            <div class="ui  button secondary export_scan_btn" >Export</div>
-        </div>
-        <div class="ui horizontal divider">
-            Or
-          </div>
-        <div class="content">
-
-            <form class="ui tiny form controls" id="scan_delete_form">
-                <textarea id="import_scan_json" style="width: 100%; min-height: 100px;"></textarea>
-            </form>
-            <div class="ui  button secondary import_scan_text_btn">Import from text</div>
-            <div class="ui right floated button secondary import_scan_file_btn">Import from file</div>
-            <input id="import_scan_file_input" type="file" hidden/>
-        </div>
-    </div>
-
+                    $('#actionRunning').hide();
+                    showResult('Success', 'Workflow triggered successfully!');
+                })
+                .catch(error => {
+                    $('#actionRunning').hide();
+                    showResult('Error', 'Failed to trigger workflow: ' + error.message);
+                });
+            });
+        });
+    </script>
 </body>
-
 </html>
