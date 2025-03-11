@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blackdagger Extension</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 10px; }
+    h1 { text-align: center; }
+    nav { text-align: center; margin-bottom: 15px; }
+    nav button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+    .section { display: none; }
+    .section.active { display: block; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    pre { background: #f4f4f4; padding: 10px; overflow: auto; }
+    .input-group { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 5px; }
+    input[type="text"] { width: 48%; padding: 6px; margin-right: 2%; }
+    textarea { width: 100%; padding: 6px; }
+    button.action-btn { margin-top: 10px; padding: 8px 12px; cursor: pointer; }
+    .param-group { margin-bottom: 5px; }
+    .param-group input { width: 45%; margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Blackdagger Extension</h1>
+  <nav>
+    <button id="btnListDags">List DAGs</button>
+    <button id="btnStartDag">Start DAG</button>
+    <button id="btnSearchDags">Search DAG</button>
+    <button id="btnSettings">Settings</button>
+  </nav>
+  
+  <!-- List DAGs Section -->
+  <div id="sectionListDags" class="section">
+    <h2>DAG List</h2>
+    <table id="dagTable">
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  
+  <!-- Start DAG Section -->
+  <div id="sectionStartDag" class="section">
+    <h2>Start DAG</h2>
+    <form id="startDagForm">
+      <div class="input-group">
+        <label for="startDagId">DAG Name:</label>
+        <input type="text" id="startDagId" name="dagId" placeholder="Enter DAG name" required>
+      </div>
+      <div class="input-group">
+        <label for="paramsContainer">DAG Parameters:</label>
+        <div id="paramsContainer">
+          <!-- Parameter input groups will be added here dynamically -->
+        </div>
+        <button type="button" id="addParamButton" class="action-btn">Add Parameter</button>
+      </div>
+      <button type="submit" class="action-btn">Start DAG</button>
+    </form>
+    <div id="startDagResult"></div>
+  </div>
+  
+  <!-- Search DAG Section -->
+  <div id="sectionSearchDags" class="section">
+    <h2>Search DAG</h2>
+    <form id="searchDagForm">
+      <div class="input-group">
+        <label for="q">Query:</label>
+        <input type="text" id="q" name="q" required>
+      </div>
+      <button type="submit" class="action-btn">Search</button>
+    </form>
+    <div id="searchResults"></div>
+  </div>
+  
+  <!-- Settings Section -->
+  <div id="sectionSettings" class="section">
+    <h2>API Connection Settings</h2>
+    <form id="settingsForm">
+      <div class="input-group">
+        <label for="apiUrl">API Base URL:</label>
+        <input type="text" id="apiUrl" name="apiUrl" placeholder="http://localhost:8080/api/v1" required>
+      </div>
+      <button type="submit" class="action-btn">Update Connection</button>
+    </form>
+    <div id="settingsResult"></div>
+  </div>
+  
+  <script src="../blackdagger.js" defer></script>
+</body>
+</html>
