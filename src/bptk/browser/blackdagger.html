@@ -1,98 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Blackdagger Extension</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 10px; }
-    h1 { text-align: center; }
-    nav { text-align: center; margin-bottom: 15px; }
-    nav button { margin: 5px; padding: 8px 12px; cursor: pointer; }
-    .section { display: none; }
-    .section.active { display: block; }
-    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    pre { background: #f4f4f4; padding: 10px; overflow: auto; }
-    .input-group { margin-bottom: 10px; }
-    label { display: block; margin-bottom: 5px; }
-    input[type="text"] { width: 48%; padding: 6px; margin-right: 2%; }
-    textarea { width: 100%; padding: 6px; }
-    button.action-btn { margin-top: 10px; padding: 8px 12px; cursor: pointer; }
-    .param-group { margin-bottom: 5px; }
-    .param-group input { width: 45%; margin-right: 5px; }
-  </style>
+<meta charset="utf-8" />
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+<meta content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=no" name="viewport" />
+<meta content="Blackdagger Extension" name="description" />
+<meta content="Blackdagger Extension, DAG management" name="keywords" />
+<meta content="#ffffff" name="theme-color" />
+<title>Blackdagger Extension</title>
+<script src="../packages/browser-polyfill/browser-polyfill.min.js"></script>
+<script src="../packages/jquery/jquery.min.js"></script>
+<script src="../packages/jquery/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="../packages/semantic-ui/semantic.min.css" type="text/css" />
+<script src="../packages/semantic-ui/semantic.min.js"></script>
+<link rel="stylesheet" href="assets/css/default.css" type="text/css" />
 </head>
 <body>
-  <h1>Blackdagger Extension</h1>
-  <nav>
-    <button id="btnListDags">List DAGs</button>
-    <button id="btnStartDag">Start DAG</button>
-    <button id="btnSearchDags">Search DAG</button>
-    <button id="btnSettings">Settings</button>
-  </nav>
-  
-  <!-- List DAGs Section -->
-  <div id="sectionListDags" class="section">
-    <h2>DAG List</h2>
-    <table id="dagTable">
-      <thead>
-        <tr>
-          <th>File</th>
-          <th>Name</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+<div id="mainMenuWrapper">
+  <div class="ui segment clearing info_tab">
+    <div id="dashboard_message_text" class="ui left floated header short_message_text" style="width: calc(100vw - 160px);">
+      Blackdagger Extension
+    </div>
+    <div class="ui right floated header icons" style="padding-top:5px; padding-right: 4px !important;">
+      <div class="ui mini right floated icon button"><i class="refresh large icon" title="Refresh"></i></div>
+    </div>
   </div>
-  
-  <!-- Start DAG Section -->
-  <div id="sectionStartDag" class="section">
-    <h2>Start DAG</h2>
-    <form id="startDagForm">
-      <div class="input-group">
-        <label for="startDagId">DAG Name:</label>
-        <input type="text" id="startDagId" name="dagId" placeholder="Enter DAG name" required>
-      </div>
-      <div class="input-group">
-        <label for="paramsContainer">DAG Parameters:</label>
-        <div id="paramsContainer">
-          <!-- Parameter input groups will be added here dynamically -->
+  <div class="ui attached tabular menu">
+    <a class="item active" data-tab="listDags">List DAGs</a>
+    <a class="item" data-tab="startDag">Start DAG</a>
+    <a class="item" data-tab="searchDags">Search DAG</a>
+    <a class="item" data-tab="settings">Settings</a>
+  </div>
+</div>
+
+<div id="pagecontent" style="padding-top:80px">
+  <div id="main" style="overflow: scroll;scrollbar-width: none;width: 100%">
+    <!-- List DAGs Section -->
+    <div class="ui tab segment active" data-tab="listDags">
+      <div class="content">
+        <div class="ui small header">DAG List</div>
+        <div style="margin-top: 5px;scrollbar-width: none;">
+          <div class="container">
+            <table id="dagTable" class="ui celled table responsive nowrap unstackable" width="100%">
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
-        <button type="button" id="addParamButton" class="action-btn">Add Parameter</button>
       </div>
-      <button type="submit" class="action-btn">Start DAG</button>
-    </form>
-    <div id="startDagResult"></div>
-  </div>
-  
-  <!-- Search DAG Section -->
-  <div id="sectionSearchDags" class="section">
-    <h2>Search DAG</h2>
-    <form id="searchDagForm">
-      <div class="input-group">
-        <label for="q">Query:</label>
-        <input type="text" id="q" name="q" required>
+      <div style="position:absolute; top:4px;right: 4px">
+        <div class="ui centered inline disabled inverted loader list-dags"></div>
       </div>
-      <button type="submit" class="action-btn">Search</button>
-    </form>
-    <div id="searchResults"></div>
-  </div>
-  
-  <!-- Settings Section -->
-  <div id="sectionSettings" class="section">
-    <h2>API Connection Settings</h2>
-    <form id="settingsForm">
-      <div class="input-group">
-        <label for="apiUrl">API Base URL:</label>
-        <input type="text" id="apiUrl" name="apiUrl" placeholder="http://localhost:8080/api/v1" required>
+    </div>
+
+    <!-- Start DAG Section -->
+    <div class="ui tab segment" data-tab="startDag">
+      <div class="content">
+        <div class="ui small header">Start DAG</div>
+        <form id="startDagForm" class="ui form">
+          <div class="field">
+            <label for="startDagId">DAG Name:</label>
+            <input type="text" id="startDagId" name="dagId" placeholder="Enter DAG name" required>
+          </div>
+          <div class="field">
+            <label for="paramsContainer">DAG Parameters:</label>
+            <div id="paramsContainer">
+              <!-- Parameter input groups will be added here dynamically -->
+            </div>
+            <button type="button" id="addParamButton" class="ui small button">Add Parameter</button>
+          </div>
+          <button type="submit" class="ui primary button">Start DAG</button>
+        </form>
+        <div id="startDagResult" class="ui message" style="display: none;"></div>
       </div>
-      <button type="submit" class="action-btn">Update Connection</button>
-    </form>
-    <div id="settingsResult"></div>
+      <div style="position:absolute; top:4px;right: 4px">
+        <div class="ui centered inline disabled inverted loader start-dag"></div>
+      </div>
+    </div>
+
+    <!-- Search DAG Section -->
+    <div class="ui tab segment" data-tab="searchDags">
+      <div class="content">
+        <div class="ui small header">Search DAG</div>
+        <form id="searchDagForm" class="ui form">
+          <div class="field">
+            <label for="q">Query:</label>
+            <input type="text" id="q" name="q" required>
+          </div>
+          <button type="submit" class="ui primary button">Search</button>
+        </form>
+        <div id="searchResults" class="ui segment" style="margin-top: 20px; display: none;"></div>
+      </div>
+      <div style="position:absolute; top:4px;right: 4px">
+        <div class="ui centered inline disabled inverted loader search-dags"></div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="ui tab segment" data-tab="settings">
+      <div class="content">
+        <div class="ui small header">API Connection Settings</div>
+        <form id="settingsForm" class="ui form">
+          <div class="field">
+            <label for="apiUrl">API Base URL:</label>
+            <input type="text" id="apiUrl" name="apiUrl" placeholder="http://localhost:8080/api/v1" required>
+          </div>
+          <button type="submit" class="ui primary button">Update Connection</button>
+        </form>
+        <div id="settingsResult" class="ui message" style="display: none;"></div>
+      </div>
+      <div style="position:absolute; top:4px;right: 4px">
+        <div class="ui centered inline disabled inverted loader settings"></div>
+      </div>
+    </div>
   </div>
-  
-  <script src="../blackdagger.js" defer></script>
+</div>
+
+<div class="ui mini modal error" id="error_dialog">
+  <div class="header">Operation error</div>
+  <div class="content">
+    <span id="error_message"></span>
+  </div>
+  <div class="actions">
+    <div class="ui approve button">Close</div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('.menu .item').tab();
+  });
+</script>
+<script src="../blackdagger.js" defer></script>
 </body>
 </html>
