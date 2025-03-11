@@ -2,9 +2,11 @@
 
 ![](https://github.com/ErdemOzgen/blackdagger/blob/main/assets/images/blackdaggerReadme.png)
 
+The Blackdagger Penetration Testing Kit (BPTK) browser extension is a sophisticated, enhanced version of the OWASP Penetration Testing Kit, designed specifically for Red Team operations and advanced penetration testing workflows. Leveraging GitHub Actions runners, BPTK performs dynamic application security testing (DAST) without triggering common web defenses or IP-based blocking mechanisms, significantly improving operational security (OPSEC).
+
 ![](./imgs/1.png)
 
-The Blackdagger Penetration Testing Kit (BPTK) browser extension is a sophisticated, enhanced version of the OWASP Penetration Testing Kit, designed specifically for Red Team operations and advanced penetration testing workflows. Leveraging GitHub Actions runners, BPTK performs dynamic application security testing (DAST) without triggering common web defenses or IP-based blocking mechanisms, significantly improving operational security (OPSEC).
+
 
 ## Key Features
 
