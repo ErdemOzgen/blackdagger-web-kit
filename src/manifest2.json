@@ -3,7 +3,7 @@
     "name": "Blackdagger Penetration Testing Kit",
     "short_name": "BPTK",
     "description": "Blackdagger Penetration Testing Kit",
-    "version": "8.9.2",
+    "version": "1.0.6",
     "manifest_version": 2,
     "background": {
         "page": "bptk/background.html"

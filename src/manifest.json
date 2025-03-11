@@ -3,7 +3,7 @@
     "name": "BLACKDAGGER BPTK",
     "short_name": "BLACKDAGGER BPTK",
     "description": "Blackdagger Penetration Testing Kit",
-    "version": "3.6.9",
+    "version": "1.0.6",
     "manifest_version": 3,
     "incognito": "split",
     "background": {
