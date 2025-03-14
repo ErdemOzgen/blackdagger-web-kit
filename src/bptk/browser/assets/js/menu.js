@@ -136,12 +136,6 @@ $('#footer_menu').prepend(
         <a href="mailto:m.erdemozgen@gmail.com">m.erdemozgen@gmail.com</a>
     </div>
     -->
-    <div class="ui mini orange message" style="height: 25px;padding-top: 4px;position: fixed; bottom: -11px; left:269px; z-index:1">
-        <i class="exclamation circle icon"></i>
-        <a target="_blank" href="https://www.true-positives.com/bptk-community">
-            Please help us improve the BPTK
-        </a>
-    </div>
     `
 );
 

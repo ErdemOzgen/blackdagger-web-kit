@@ -114,8 +114,8 @@ npm install --ignore-scripts fomantic-ui
 ## Installation Links
 
 Official web extension links will be updated upon release. Meanwhile, download and build from the repository:
+Due to the Host Permission, your extension may require an in-depth review which will delay publishing.
+For all extensions we are waiting for google review.
 
-- [Firefox](https://github.com/ErdemOzgen/blackdagger-web-kit)
-- [Chrome](https://github.com/ErdemOzgen/blackdagger-web-kit)
 
 Take your penetration testing and Red Team operations to the next level with the enhanced security capabilities of the Blackdagger Penetration Testing Kit (BPTK).
