@@ -111,11 +111,15 @@ If encountering build errors, run:
 npm install --ignore-scripts fomantic-ui
 ```
 
-## Installation Links
+## Installation Instructions
 
-Official web extension links will be updated upon release. Meanwhile, download and build from the repository:
-Due to the Host Permission, your extension may require an in-depth review which will delay publishing.
-For all extensions we are waiting for google review.
+The official web extension links will be provided upon approval and release. Currently, the extension submissions are awaiting review by Google, and due to Host Permission requirements, the review process may take longer than usual.
 
+In the meantime, you can download and manually install the extension from the repository releases. Follow the installation steps detailed [here](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world).
 
-Take your penetration testing and Red Team operations to the next level with the enhanced security capabilities of the Blackdagger Penetration Testing Kit (BPTK).
+### Download Links
+
+- [Firefox Extension (Version 1.0.6)](https://github.com/ErdemOzgen/blackdagger-web-kit/releases/download/v1.0.6/blackdagger_web_kit_firefox_1.0.6.zip)
+- [Chrome Extension (Version 1.0.6)](https://github.com/ErdemOzgen/blackdagger-web-kit/releases/download/v1.0.6/blackdagger_web_kit_chrome_1.0.6.zip)
+
+Elevate your penetration testing and Red Team operations with the advanced security capabilities of the Blackdagger Penetration Testing Kit (BPTK).
