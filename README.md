@@ -4,6 +4,24 @@
   <img src="https://github.com/ErdemOzgen/blackdagger/blob/main/assets/images/blackdaggerReadme.png" width="500" alt="blackdagger-logo">
 </p>
 
+<p align="center">
+
+  <a href="https://www.blackhat.com/us-24/arsenal/schedule/index.html#blackdagger-39274">
+    <img src="https://github.com/toolswatch/badges/blob/master/arsenal/usa/2024.svg" />
+  </a>
+  <a href="https://www.blackhat.com/sector/2024/arsenal/schedule/index.html#blackdagger-40889">
+    <img src="https://github.com/toolswatch/badges/blob/master/arsenal/sector/2024.svg" />
+  </a>
+  <a href="https://www.blackhat.com/eu-24/arsenal/schedule/index.html#blackdagger-41344">
+    <img src="https://github.com/ataseren/badges/blob/master/arsenal/europe/2024.svg" />
+  </a>
+    <a href="https://www.blackhat.com/asia-25/arsenal/schedule/index.html#blackdagger-43296">
+    <img src="https://github.com/ataseren/badges/blob/master/arsenal/asia/2025.svg" />
+  </a>
+</p>
+
+<div align="center">
+
 The Blackdagger Web Kit (BWK) browser extension is a sophisticated, enhanced version of the OWASP Penetration Testing Kit, designed specifically for Red Team operations and advanced penetration testing workflows. Leveraging GitHub Actions runners, BWK performs dynamic application security testing (DAST) without triggering common web defenses or IP-based blocking mechanisms, significantly improving operational security (OPSEC).
 
 ![](./imgs/1.png)
