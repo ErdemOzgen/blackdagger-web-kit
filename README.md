@@ -1,8 +1,9 @@
 # Blackdagger  Web Kit (BWK)
 
 <p align="center">
-  <img src="https://github.com/ErdemOzgen/blackdagger/blob/main/assets/images/blackdaggerReadme.png" width="500" alt="blackdagger-logo">
-</p>
+   <img src="./imgs/web.png" width="300" alt="web-logo">
+   <img src="./imgs/blackdagger.png" width="300" alt="blackdagger-logo">
+ </p>
 
 
 The Blackdagger Web Kit (BWK) browser extension is a sophisticated, enhanced version of the OWASP Penetration Testing Kit, designed specifically for Red Team operations and advanced penetration testing workflows. Leveraging GitHub Actions runners, BWK performs dynamic application security testing (DAST) without triggering common web defenses or IP-based blocking mechanisms, significantly improving operational security (OPSEC).
